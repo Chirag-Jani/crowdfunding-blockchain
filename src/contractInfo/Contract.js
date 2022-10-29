@@ -3,8 +3,8 @@ import web3 from "./Web3";
 const userContract = require("./build/UserContract.json");
 const donationContract = require("./build/DonationContract.json");
 
-const deployedDonation = "0x8AE493e9f2712926Fa4C24dc02036c0726D62D92";
-const deployedUser = "0x643d5Ef07689e3fF056f96F906678700B6E1C02C";
+const deployedDonation = "0xb612C5a23273AE348408fa34680f9c5c60793166";
+const deployedUser = "0x162CE76972c95C9889203433E5051fc5D5F5c071";
 
 const userWeb3Contract = new web3.eth.Contract(userContract.abi, deployedUser);
 

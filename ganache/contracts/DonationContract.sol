@@ -108,10 +108,14 @@ contract DonationContract {
     }
 
     // donate function
-    function donate(uint256 index) public payable {
+    function donate(
+        uint256 index,
+        uint256 amount,
+        address donatorAddress
+    ) public payable {
         // amount can not be greater than needed
         require(
-            msg.value <=
+            amount <=
                 ongoingDonations[index].requestedAmount -
                     ongoingDonations[index].receivedAmount,
             "Can not send extra"
@@ -120,18 +124,18 @@ contract DonationContract {
         // send eth
         (bool sent, bytes memory data) = ongoingDonations[index]
             .postCreator
-            .call{value: msg.value / 1 ether}("");
+            .call{value: amount / 1 ether}("");
         require(sent, "Failed to send Ether");
 
         // update donators
-        instanceOfDonator.donatorAddress = msg.sender;
-        instanceOfDonator.donatedAmount = msg.value / 1 ether;
+        instanceOfDonator.donatorAddress = donatorAddress;
+        instanceOfDonator.donatedAmount = amount / 1 ether;
 
         // adding donator
         ongoingDonations[index].donators.push(instanceOfDonator);
 
         // update recieved amount
-        ongoingDonations[index].receivedAmount += msg.value / 1 ether;
+        ongoingDonations[index].receivedAmount += amount / 1 ether;
 
         // move donation post to finished donations if requested == recieved amount
         if (
