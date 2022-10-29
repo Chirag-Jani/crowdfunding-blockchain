@@ -2,9 +2,40 @@ import React from "react";
 
 function Home(props) {
   const { ongoingFunds } = props;
+
+  // * to render donators based on condition
+  const donators = (post) => {
+    if (post.donators.length) {
+      post.donators.map((donator, index) => {
+        return (
+          <div className="border border-dark rounded my-3 p-2" key={index}>
+            <p>
+              <strong>
+                Donator {index + 1} Name: <br />{" "}
+              </strong>
+              {donator.donatorName}
+            </p>
+            <p>
+              <strong>
+                Donator {index + 1} Amount: <br />
+              </strong>
+              {donator.donatedAmount} Ethers
+            </p>
+          </div>
+        );
+      });
+    } else {
+      return (
+        <div>
+          <p>No Donations Yet</p>
+        </div>
+      );
+    }
+  };
   return (
     <div className="container-fluid my-5">
       <h1 className="text-center m-3">This is the list of Ongoing Donations</h1>
+      {/* Nothing much - just mapping through the array and rendering each post */}
       {ongoingFunds.map((post, index) => {
         return (
           <div
@@ -15,18 +46,19 @@ function Home(props) {
               <p>
                 <strong> Creator:</strong>
                 <br />
-                {post.creator}
+                {post.postCreator.slice(0, 7)}...
+                {post.postCreator.slice(35, 42)}
               </p>
               <p>
                 <strong> Date:</strong>
                 <br />
-                {post.date}
+                {post.postDate.slice(0, 15)}
               </p>
             </span>
             <p>
               <strong> Description:</strong>
               <br />
-              {post.description}
+              {post.postText}
             </p>
             <p>
               <strong> Requested Amount:</strong>
@@ -40,27 +72,8 @@ function Home(props) {
             </p>
             <span>
               <strong> Donators: </strong>
-              {post.donators.map((donator, index) => {
-                return (
-                  <div
-                    className="border border-dark rounded my-3 p-2"
-                    key={index}
-                  >
-                    <p>
-                      <strong>
-                        Donator {index + 1} Name: <br />{" "}
-                      </strong>
-                      {donator.donatorName}
-                    </p>
-                    <p>
-                      <strong>
-                        Donator {index + 1} Amount: <br />
-                      </strong>
-                      {donator.donatedAmount} Ethers
-                    </p>
-                  </div>
-                );
-              })}
+              {/* rendering donators based on the function written above */}
+              {donators(post)}
             </span>
             <input
               type="text"

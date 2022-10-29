@@ -1,24 +1,26 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 function Auth(props) {
   const {
     loginPage,
     toggleLoginPage,
-    userAddress,
-    userLoginInput,
+    // userAddress,
+    // userLoginInput,
     login,
     signupInfo,
     getSignUpInfo,
     signUp,
   } = props;
 
-  // if user wants to log in
+  // ? if user wants to log in
   if (loginPage) {
     return (
       <div>
         <div className="container w-50 my-5">
           <h2 className="mt-0 mb-3">Login Your Account</h2>
           <div className="mb-3">
+            {/* As we are using metamask to get address this field is disabled */}
             {/* <label className="form-label">Wallet Address:</label>
             <input
               type="text"
@@ -29,9 +31,12 @@ function Auth(props) {
               disabled={true}
             /> */}
           </div>
-          <button type="submit" className="btn btn-primary" onClick={login}>
-            Login using Metamask
-          </button>
+          {/*  temporary Link use karyu che home page par login pachi redirect karva */}
+          <Link to="/">
+            <button type="submit" className="btn btn-primary" onClick={login}>
+              Login using Metamask
+            </button>
+          </Link>
           <p className="mt-2">
             Don't have an account?{" "}
             <a href="#" onClick={toggleLoginPage}>
@@ -50,8 +55,11 @@ function Auth(props) {
         <div className="container w-50 my-5">
           <h2 className="mt-0 mb-3">Sign Up now</h2>
           <div className="mb-3">
-            <label className="form-label">Wallet Address:</label>
-            <input
+            <label className="form-label">
+              Wallet Address will be taken from MetaMask
+            </label>
+            {/* As we are using metamask to get address this field is disabled */}
+            {/* <input
               type="text"
               className="form-control"
               placeholder="0x...000"
@@ -59,7 +67,7 @@ function Auth(props) {
               value={signupInfo.userAddress}
               onChange={(e) => getSignUpInfo(e)}
               disabled={true}
-            />
+            /> */}
           </div>
           <div className="mb-3">
             <label className="form-label">Name:</label>

@@ -1,3 +1,9 @@
+// ! TODO: We should not show user's address on the post as people can log in using that - instead find user using the address and show name of that user
+// todo: donate ethers
+// todo: decimal input
+// todo: render finished donations
+// todo: show user's requests (both ongoing and finished) on profile page - need to write in contract first
+
 // * React Utilities
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -15,56 +21,58 @@ import {
 } from "./contractInfo/Contract";
 
 const App = () => {
-  // ! the below two are just temporary
-  // * to get methods from donation contract
-  const getDonationMethods = async () => {
-    try {
-      const accounts = await ethereum.request({
-        method: "eth_accounts",
-      });
-      const donatinoMethods = await Donation.methods;
-      console.log(donatinoMethods);
-    } catch (error) {
-      console.error(error.message);
-    }
-  };
-
-  // * to get methods from user contract
-  const getUserMethods = async () => {
-    try {
-      const accounts = await ethereum.request({
-        method: "eth_accounts",
-      });
-      const userMethods = await User.methods;
-      console.log(userMethods);
-    } catch (error) {
-      console.error(error.message);
-    }
-  };
-
   // ! DONATION CONTRACT INTERACTION
 
   // * state to handle ongoing donations
-  const [ongoingFunds, setOngoingFunds] = useState([
-    {
-      creator: "0x0000000000000",
-      description: "this is the desc of the post",
-      date: Date(),
-      requestedAmount: 14,
-      receivedAmount: 5,
-      donators: [
-        {
-          donatorName: "one",
-          donatedAmount: 3,
-        },
-        {
-          donatorName: "two",
-          donatedAmount: 2,
-        },
-      ],
-      index: 0,
-    },
-  ]);
+  const [ongoingFunds, setOngoingFunds] = useState([]);
+
+  // * state to handle finished donations
+  const [finishedFunds, setFinishedFunds] = useState([]);
+
+  // ? posting a donation request
+
+  // * state to manage user's input
+  const [requestInfo, setRequestInfo] = useState({
+    requestText: "",
+    requestedAmount: 0,
+  });
+
+  // * handler function to take user's input
+  const handleRequestInput = (e) => {
+    const { name, value } = e.target;
+    setRequestInfo({ ...requestInfo, [name]: value });
+  };
+
+  // * request function
+  const createPost = async () => {
+    // * assiging values to variable to make it more readable while passing to function
+    let postCreator = loggedInUserInfo.address;
+    let postText = requestInfo.requestText;
+    let postDate = Date();
+    let requestedAmount = requestInfo.requestedAmount;
+
+    try {
+      // * getting account
+      const accounts = await ethereum.request({
+        method: "eth_accounts",
+      });
+
+      // * calling function to add post
+      const createPost = await Donation.methods
+        .createPost(postCreator, postText, postDate, requestedAmount)
+        .send({ from: accounts[0], gas: 20000000 });
+
+      // * getting ongoingFunds
+      const updatedOngoingFunds = await Donation.methods
+        .getDonations(true)
+        .call({ from: accounts[0], gas: 20000000 });
+
+      // * updating array of ongoing donations
+      setOngoingFunds(updatedOngoingFunds);
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
 
   // ! USER CONTRACT INTERACTION
 
@@ -102,6 +110,7 @@ const App = () => {
   // ! Login the user
   const login = async () => {
     try {
+      // * getting accounts
       const accounts = await ethereum.request({
         method: "eth_accounts",
       });
@@ -111,14 +120,14 @@ const App = () => {
         .login(userAddress)
         .call({ from: accounts[0], gas: 20000000 });
       setUserLoggedIn(true);
-      alert("Login successfull");
+      // alert("Login successfull");
 
       // * getting the user to set up profile info
-
       const findUser = await User.methods
         .findUser(userAddress)
         .call({ from: accounts[0], gas: 20000000 });
 
+      // * setting logged in user info to show on profile
       setLoggedInUserInfo({
         address: findUser.userAddress,
         name: findUser.userName,
@@ -127,6 +136,17 @@ const App = () => {
     } catch (error) {
       console.error(error.message);
     }
+  };
+
+  // * to logout the user
+  const logout = async () => {
+    setUserLoggedIn(false);
+    alert("User logged out");
+    setLoggedInUserInfo({
+      address: "",
+      name: "",
+      email: "",
+    });
   };
 
   // ? SIGN UP SHIT
@@ -159,7 +179,13 @@ const App = () => {
           signupInfo.userEmail
         )
         .send({ from: accounts[0], gas: 20000000 });
-      console.log("SignUp Successful");
+      setSignupInfo({
+        userAddress: "",
+        userName: "",
+        userEmail: "",
+      });
+      alert("SignUp Successful");
+      setLoginPage(true);
     } catch (error) {
       console.error(error.message);
     }
@@ -167,6 +193,7 @@ const App = () => {
 
   // ! useEffect to setAddress
   useEffect(() => {
+    //  * to get account
     const getAccout = async () => {
       const accounts = await ethereum.request({
         method: "eth_accounts",
@@ -177,55 +204,98 @@ const App = () => {
       setUserAddress(accounts[0]);
     };
     getAccout();
+
+    // * to handle account change
     window.ethereum.on("accountsChanged", function (accounts) {
       // * for signup
       setSignupInfo({ userAddress: accounts[0] });
       // * for login
       setUserAddress(accounts[0]);
     });
+
+    // * to get donations
+    const getFunds = async () => {
+      const accounts = await ethereum.request({
+        method: "eth_accounts",
+      });
+      // * onGoing
+      const updatedOngoingFunds = await Donation.methods
+        .getDonations(true)
+        .call({ from: accounts[0], gas: 20000000 });
+
+      // * updating array of ongoing donations
+      setOngoingFunds(updatedOngoingFunds);
+      // * finished
+      const updatedFinishedFunds = await Donation.methods
+        .getDonations(false)
+        .call({ from: accounts[0], gas: 20000000 });
+
+      // * updating array of ongoing donations
+      setFinishedFunds(updatedFinishedFunds);
+    };
+    getFunds();
   }, []);
 
   return (
     <Router>
-      <div>
-        <button className="btn btn-primary m-5" onClick={getDonationMethods}>
-          Get Donation Contract Methods
-        </button>
-        <button className="btn btn-primary m-5" onClick={getUserMethods}>
-          Get Donation Contract Methods
-        </button>
-
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home ongoingFunds={ongoingFunds} />} />
-          <Route
-            path="/auth"
-            element={
-              <Auth
-                loginPage={loginPage}
-                toggleLoginPage={toggleLoginPage}
-                // * for login
-                userAddress={userAddress}
-                // userLoginInput={userLoginInput} // ? disabled because we are using login using metamask
-                login={login}
-                // * for signup
-                signupInfo={signupInfo}
-                getSignUpInfo={getSignUpInfo}
-                signUp={signUp}
-              />
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <Profile
-                loggedInUserInfo={loggedInUserInfo}
-                userLoggedIn={userLoggedIn}
-              />
-            }
-          />
-        </Routes>
-      </div>
+      <Navbar
+        // * to render Login or Logout element
+        userLoggedIn={userLoggedIn}
+        // * to call the logout function
+        logout={logout}
+      />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Home
+              // * to render ongoing funds
+              ongoingFunds={ongoingFunds}
+              // * to render finished funds
+              finishedFunds={finishedFunds}
+            />
+          }
+        />
+        <Route
+          path="/auth"
+          element={
+            <Auth
+              // * to check which page to load (loginPage = true then log in page else sign up page)
+              loginPage={loginPage}
+              // * to toggle between login and signup pages
+              toggleLoginPage={toggleLoginPage}
+              // * for login
+              userAddress={userAddress}
+              // userLoginInput={userLoginInput} // ? disabled because we are using login using metamask
+              // * login function
+              login={login}
+              // * for values in input fields
+              signupInfo={signupInfo}
+              // * to handle user's input
+              getSignUpInfo={getSignUpInfo}
+              // * signup funciton
+              signUp={signUp}
+            />
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <Profile
+              // * to render loggedin user's info
+              loggedInUserInfo={loggedInUserInfo}
+              // * to check if user is logged in or not
+              userLoggedIn={userLoggedIn}
+              // * to get values in input fields
+              requestInfo={requestInfo}
+              // * handling user's input
+              handleRequestInput={handleRequestInput}
+              // * calling create post funciton
+              createPost={createPost}
+            />
+          }
+        />
+      </Routes>
     </Router>
   );
 };
