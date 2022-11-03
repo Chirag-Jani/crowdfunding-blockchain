@@ -122,11 +122,6 @@ contract DonationContract {
         );
 
         // send eth
-        // (bool sent, bytes memory data) = ongoingDonations[index]
-        //     .postCreator
-        //     .call{value: amount / 1 ether}("");
-        // require(sent, "Failed to send Ether");
-
         ongoingDonations[index].postCreator.transfer(amount);
 
         // update donators
@@ -154,13 +149,14 @@ contract DonationContract {
             finishedIndex++;
 
             // remove donation post from ongoing
-            ongoingDonations[index] = ongoingDonations[
-                ongoingDonations.length - 1
-            ];
-            ongoingDonations.pop();
+            // ! issue is here while popping last element as we 0 - 1 = -1 thai jaay
+            // ongoingDonations[index] = ongoingDonations[
+            //     ongoingDonations.length - 1
+            // ];
+            // ongoingDonations.pop();
 
             // decrementing index for next post because one post is removed
-            ongoingIndex--; // currntly commented out because it may cause some issues
+            // ongoingIndex--; // currntly commented out because it may cause some issues
         }
     }
 }

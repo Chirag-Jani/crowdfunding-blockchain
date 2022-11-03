@@ -73,61 +73,65 @@ function Home(props) {
       {/* Nothing much - just mapping through the array and rendering each post */}
       <div className="d-flex justify-content-around flex-wrap">
         {ongoingFunds.map((post, index) => {
-          return (
-            <div
-              className="text-start border border-dark border-3 rounded p-4 m-2"
-              key={index}
-              style={{ height: "fit-content" }}
-            >
-              <span className="d-flex justify-content-between">
-                <p>
-                  <strong> Creator:</strong>
-                  <br />
-                  {post.postCreator.slice(0, 7)}...
-                  {post.postCreator.slice(35, 42)}
-                </p>
-                <p>
-                  <strong> Date of Post:</strong>
-                  <br />
-                  {post.postDate.slice(0, 15)}
-                </p>
-              </span>
-              <p>
-                <strong> Description:</strong>
-                <br />
-                {post.postText}
-              </p>
-              <p>
-                <strong> Requested Amount:</strong>
-                <br />
-                {post.requestedAmount} Ethers
-              </p>
-              <p>
-                <strong> Received Amount:</strong>
-                <br />
-                {post.receivedAmount} Ethers
-              </p>
-              <span>
-                <strong> Donators: </strong>
-                {returnDonators(post)}
-              </span>
-              <input
-                type="text"
-                placeholder="Enter Ethers"
-                className="me-3 text-center p-2 border border-dark rounded w-50 fw-bold"
-                value={donationAmount}
-                onChange={donationAmountInput}
-              />
-              <button
-                className="btn btn-success"
-                onClick={() => {
-                  donate(post.postIndex);
-                }}
-              >
-                Donate
-              </button>
-            </div>
-          );
+          {
+            if (post.requestedAmount != post.receivedAmount) {
+              return (
+                <div
+                  className="text-start border border-dark border-3 rounded p-4 m-2"
+                  key={index}
+                  style={{ height: "fit-content" }}
+                >
+                  <span className="d-flex justify-content-between">
+                    <p>
+                      <strong> Creator:</strong>
+                      <br />
+                      {post.postCreator.slice(0, 7)}...
+                      {post.postCreator.slice(35, 42)}
+                    </p>
+                    <p>
+                      <strong> Date of Post:</strong>
+                      <br />
+                      {post.postDate.slice(0, 15)}
+                    </p>
+                  </span>
+                  <p>
+                    <strong> Description:</strong>
+                    <br />
+                    {post.postText}
+                  </p>
+                  <p>
+                    <strong> Requested Amount:</strong>
+                    <br />
+                    {post.requestedAmount} Ethers
+                  </p>
+                  <p>
+                    <strong> Received Amount:</strong>
+                    <br />
+                    {post.receivedAmount} Ethers
+                  </p>
+                  <span>
+                    <strong> Donators: </strong>
+                    {returnDonators(post)}
+                  </span>
+                  <input
+                    type="text"
+                    placeholder="Enter Ethers"
+                    className="me-3 text-center p-2 border border-dark rounded w-50 fw-bold"
+                    value={donationAmount}
+                    onChange={donationAmountInput}
+                  />
+                  <button
+                    className="btn btn-success"
+                    onClick={() => {
+                      donate(post.postIndex);
+                    }}
+                  >
+                    Donate
+                  </button>
+                </div>
+              );
+            }
+          }
         })}
       </div>
       {/*  */}

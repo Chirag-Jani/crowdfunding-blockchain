@@ -97,6 +97,8 @@ const App = () => {
         .getSingleDonation(index, true)
         .call({ from: accounts[0], gas: 20000000 });
 
+      console.log(index + getPost.postIndex);
+
       // ! issue is that it is sending funds to contract
       // * calling donate
       const sendFunds = await Donation.methods
