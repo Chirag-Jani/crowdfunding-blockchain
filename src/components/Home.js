@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 
 function Home(props) {
-  const { ongoingFunds, donationAmount, donationAmountInput, donate } = props;
+  const {
+    ongoingFunds,
+    donationAmount,
+    donationAmountInput,
+    donate,
+    finishedFunds,
+  } = props;
 
   const [showDonators, setShowDonators] = useState({
     buttonText: "Show",
@@ -120,6 +126,55 @@ function Home(props) {
               >
                 Donate
               </button>
+            </div>
+          );
+        })}
+      </div>
+      {/*  */}
+      <h1 className="text-center m-3">
+        This is the list of Finished Donations
+      </h1>
+      {/* Nothing much - just mapping through the array and rendering each post */}
+      <div className="d-flex justify-content-around flex-wrap">
+        {finishedFunds.map((post, index) => {
+          return (
+            <div
+              className="text-start border border-dark border-3 rounded p-4 m-2"
+              key={index}
+              style={{ height: "fit-content" }}
+            >
+              <span className="d-flex justify-content-between">
+                <p>
+                  <strong> Creator:</strong>
+                  <br />
+                  {post.postCreator.slice(0, 7)}...
+                  {post.postCreator.slice(35, 42)}
+                </p>
+                <p>
+                  <strong> Date of Post:</strong>
+                  <br />
+                  {post.postDate.slice(0, 15)}
+                </p>
+              </span>
+              <p>
+                <strong> Description:</strong>
+                <br />
+                {post.postText}
+              </p>
+              <p>
+                <strong> Requested Amount:</strong>
+                <br />
+                {post.requestedAmount} Ethers
+              </p>
+              <p>
+                <strong> Received Amount:</strong>
+                <br />
+                {post.receivedAmount} Ethers
+              </p>
+              <span>
+                <strong> Donators: </strong>
+                {returnDonators(post)}
+              </span>
             </div>
           );
         })}

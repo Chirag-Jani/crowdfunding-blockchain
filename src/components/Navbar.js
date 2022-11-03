@@ -13,7 +13,7 @@ function Navbar(props) {
             <Link
               className="nav-link active fs-5"
               aria-current="page"
-              to="/auth"
+              to={"/auth"}
               onClick={logout}
             >
               <u>Logout</u>
@@ -28,7 +28,7 @@ function Navbar(props) {
             <Link
               className="nav-link active fs-5"
               aria-current="page"
-              to="/auth"
+              to={"/auth"}
             >
               <u>Login / Register</u>
             </Link>
@@ -43,7 +43,7 @@ function Navbar(props) {
       <nav className="navbar  navbar-dark bg-dark">
         {/* navbar-expand-lg removed from classname */}
         <div className="container-fluid">
-          <Link className="navbar-brand" to="/">
+          <Link className="navbar-brand" to={"/"}>
             FundUsingWeb3
           </Link>
           {/* <button
@@ -64,7 +64,7 @@ function Navbar(props) {
                 <Link
                   className="nav-link fs-5 active"
                   aria-current="page"
-                  to="/"
+                  to={"/"}
                 >
                   <u>Home</u>
                 </Link>
@@ -77,7 +77,7 @@ function Navbar(props) {
                 <Link
                   className="nav-link active fs-5"
                   aria-current="page"
-                  to="/profile"
+                  to={"/profile"}
                 >
                   <u>Profile</u>
                 </Link>

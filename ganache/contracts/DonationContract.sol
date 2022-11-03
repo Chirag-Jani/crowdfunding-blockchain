@@ -51,7 +51,7 @@ contract DonationContract {
         require(bytes(_postText).length != 0, "You have to add post text");
 
         // setting instance
-        instanceOfPostStruct.postCreator = _postCreator;
+        instanceOfPostStruct.postCreator = payable(_postCreator);
         instanceOfPostStruct.postText = _postText;
         instanceOfPostStruct.postDate = _postDate;
         instanceOfPostStruct.requestedAmount = _requestedAmount;
@@ -122,20 +122,22 @@ contract DonationContract {
         );
 
         // send eth
-        (bool sent, bytes memory data) = ongoingDonations[index]
-            .postCreator
-            .call{value: amount / 1 ether}("");
-        require(sent, "Failed to send Ether");
+        // (bool sent, bytes memory data) = ongoingDonations[index]
+        //     .postCreator
+        //     .call{value: amount / 1 ether}("");
+        // require(sent, "Failed to send Ether");
+
+        ongoingDonations[index].postCreator.transfer(amount);
 
         // update donators
         instanceOfDonator.donatorAddress = donatorAddress;
-        instanceOfDonator.donatedAmount = amount / 1 ether;
+        instanceOfDonator.donatedAmount = amount;
 
         // adding donator
         ongoingDonations[index].donators.push(instanceOfDonator);
 
         // update recieved amount
-        ongoingDonations[index].receivedAmount += amount / 1 ether;
+        ongoingDonations[index].receivedAmount += amount;
 
         // move donation post to finished donations if requested == recieved amount
         if (
@@ -158,7 +160,7 @@ contract DonationContract {
             ongoingDonations.pop();
 
             // decrementing index for next post because one post is removed
-            // ongoingIndex--; // currntly commented out because it may cause some issues
+            ongoingIndex--; // currntly commented out because it may cause some issues
         }
     }
 }

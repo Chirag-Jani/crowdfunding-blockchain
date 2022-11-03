@@ -3,7 +3,7 @@
 // todo: while taking amount input, every post's donation input is being handled, need to do that individually
 // todo: decimal input
 // todo: render finished donations on homepage
-// todo: show user's requests (both ongoing and finished) on profile page - need to write in contract first
+// todo: (OPTIONAL) show user's requests (both ongoing and finished) on profile page - need to write in contract first
 
 // * React Utilities
 import React, { useEffect, useState } from "react";
@@ -19,7 +19,7 @@ import Profile from "./components/Profile";
 import {
   userWeb3Contract as User,
   donationWeb3Contract as Donation,
-} from "./contractInfo/Contract";
+} from "../ganache/Contract";
 
 const App = () => {
   // ! DONATION CONTRACT INTERACTION
@@ -63,6 +63,8 @@ const App = () => {
         .createPost(postCreator, postText, postDate, requestedAmount)
         .send({ from: accounts[0], gas: 20000000 });
 
+      setRequestInfo({});
+
       // * getting ongoingFunds
       const updatedOngoingFunds = await Donation.methods
         .getDonations(true)
@@ -89,24 +91,23 @@ const App = () => {
         method: "eth_accounts",
       });
 
-      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      // * getting post
+
       const getPost = await Donation.methods
         .getSingleDonation(index, true)
         .call({ from: accounts[0], gas: 20000000 });
 
-      console.log(getPost);
-      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+      // ! issue is that it is sending funds to contract
       // * calling donate
       const sendFunds = await Donation.methods
         .donate(index, donationAmount, accounts[0])
-        .send({ from: accounts[0], to: getPost.postCreator, gas: 20000000 });
-
-      //
-      const getDonators = await Donation.methods
-        .getDonatorsOfPost(index, true)
-        .call({ from: accounts[0], gas: 20000000 });
-      console.log(getDonators);
+        .send({
+          from: accounts[0],
+          to: getPost.postCreator,
+          value: donationAmount,
+          gas: 20000000,
+        });
+      setDonationAmount("");
     } catch (error) {
       console.error(error.message);
     }
@@ -129,7 +130,6 @@ const App = () => {
   // ? currently disabled because login using metamask is working fine
   // const userLoginInput = (e) => {
   //   setUserAddress(e.target.value);
-  //   console.log(userAddress);
   // };
 
   // * to toggle page (from login to sign up and vice versa)
@@ -271,6 +271,7 @@ const App = () => {
       // * updating array of ongoing donations
       setFinishedFunds(updatedFinishedFunds);
     };
+
     getFunds();
   }, []);
 

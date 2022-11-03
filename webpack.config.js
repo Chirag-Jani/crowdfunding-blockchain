@@ -1,3 +1,4 @@
+// const HDWalletProvider = require("@truffle/hdwallet-provider");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
@@ -10,10 +11,6 @@ module.exports = {
           loader: "babel-loader",
         },
       },
-      {
-        test: /\.css$/,
-        use: ["style-loader", "css-loader"],
-      },
     ],
   },
   plugins: [
@@ -23,5 +20,18 @@ module.exports = {
   ],
   devServer: {
     port: 3000,
+    historyApiFallback: true,
   },
+
+  // networks: {
+  //   goerli: {
+  //     provider: function () {
+  //       return new HDWalletProvider(
+  //         mnemonic,
+  //         "https://goerli.infura.io/v3/1941fd7646334257ac0c71b8230447d2>"
+  //       );
+  //     },
+  //     network_id: 3,
+  //   },
+  // },
 };
