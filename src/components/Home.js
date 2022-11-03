@@ -1,13 +1,7 @@
 import React, { useState } from "react";
 
 function Home(props) {
-  const {
-    ongoingFunds,
-    donationAmount,
-    donationAmountInput,
-    donate,
-    finishedFunds,
-  } = props;
+  const { ongoingFunds, donationAmountInput, donate, finishedFunds } = props;
 
   const [showDonators, setShowDonators] = useState({
     buttonText: "Show",
@@ -117,7 +111,6 @@ function Home(props) {
                     type="text"
                     placeholder="Enter Ethers"
                     className="me-3 text-center p-2 border border-dark rounded w-50 fw-bold"
-                    value={donationAmount}
                     onChange={donationAmountInput}
                   />
                   <button

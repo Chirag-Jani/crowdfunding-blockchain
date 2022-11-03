@@ -1,10 +1,3 @@
-// ! TODO: We should not show user's address on the post as people can log in using that - instead find user using the address and show name of that user
-// todo: donate ethers - sending 0 ethers right now though gas gets deducted from the account
-// todo: while taking amount input, every post's donation input is being handled, need to do that individually
-// todo: decimal input
-// todo: render finished donations on homepage
-// todo: (OPTIONAL) show user's requests (both ongoing and finished) on profile page - need to write in contract first
-
 // * React Utilities
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
